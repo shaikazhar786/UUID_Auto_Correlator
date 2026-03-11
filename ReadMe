@@ -1,0 +1,64 @@
+JMeter UUID Auto-Correlator Plugin
+Overview
+The UUID Auto-Correlator is a custom Apache JMeter GUI plugin designed to automate the tedious process of finding and correlating dynamically generated EntityID values (or UUIDs) across large test plans.
+
+Instead of manually searching for hardcoded strings and replacing them one by one, this plugin scans the entire Test Plan based on predefined URL-encoded boundaries, presents the findings in an interactive table, and globally replaces selected values with uniquely named variables. It also automatically generates the corresponding User Defined Variables (UDV) component required to execute the test.
+
+Features
+Deep Script Scanning: Traverses the entire JMeter HashTree to find hardcoded values matching the specific boundaries (EntityID":" and ","IsDirty in their URL-encoded formats).
+
+Interactive UI: Provides a Swing-based interface directly inside JMeter to review, select, and modify variable names before applying changes.
+
+Global Replacement: Safely dives into complex nested JMeter properties (like HTTP Arguments, Body Data, and Headers) to ensure the hardcoded string is replaced everywhere it occurs.
+
+Auto-UDV Injection: Automatically creates a "User Defined Variables" configuration element at the Test Plan level, mapping your new variables to JMeter's native ${__UUID()} function.
+
+Smart Window Management: The plugin window automatically minimizes to your taskbar the moment you click on a request in the JMeter tree, keeping your workspace clutter-free.
+
+Prerequisites
+Java: JDK 11 or higher
+
+JMeter: Version 5.6.3 (or compatible)
+
+Build Tool: Apache Maven
+
+Build and Installation
+Clone or download this project source code.
+
+Open a terminal or command prompt in the project's root directory (where the pom.xml is located).
+
+Run the following Maven command to compile and package the plugin:
+
+Bash
+mvn clean package
+Navigate to the target/ directory and copy the generated JAR file (e.g., uuid-correlator-1.0.0.jar).
+
+Paste the JAR file into your JMeter extensions folder:
+
+Plaintext
+{JMETER_HOME}/lib/ext/
+Restart JMeter.
+
+How to Use
+Open the Plugin: In JMeter, click on Tools in the top menu bar and select UUID Auto-Correlator.
+
+Scan the Script: Click the Scan Script button. The plugin will search your current Test Plan for values caught between the configured boundaries.
+
+Review and Edit: * The found values will populate in the table.
+
+You can use the Select / Select All checkboxes to choose which values to correlate.
+
+You can double-click the Variable Name column (e.g., C_EntityID1) to manually rename the variables if desired.
+
+Correlate: Click the Correlate button.
+
+The plugin will globally replace the selected hardcoded values with ${Your_Variable_Name}.
+
+A new Auto-Generated UUID Variables element will appear at the top of your Test Plan containing the ${__UUID()} generation logic.
+
+Clear: Use the Clear button to empty the table if you want to rescan a different section or start over.
+
+Technical Notes
+Plugin Discovery: JMeter discovers this plugin via the Java ServiceLoader mechanism. Ensure the file src/main/resources/META-INF/services/org.apache.jmeter.gui.plugin.MenuCreator is intact and points to com.custom.jmeter.CorrelatorMenuCreator.
+
+Property Traversal: The plugin uses a recursive inspection method targeting StringProperty, MultiProperty, and TestElementProperty to prevent ClassCastExceptions and ensure complex objects are not accidentally overwritten as flat strings.
